@@ -1,1 +1,16 @@
-{"name":"mehmon","private":true,"type":"module","scripts":{"build":"node build.mjs"},"dependencies":{"react":"^19.2.0","react-dom":"^19.2.0"},"devDependencies":{"esbuild":"^0.25.0"}}
+{
+  "name": "mehmon",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
