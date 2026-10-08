@@ -1,5 +1,7 @@
 # Mehmon — turistlar uchun aqlli QR-menyu
 
+🔗 **Jonli sayt:** https://mehmon-zeta.vercel.app · 🤖 **Bot:** [@mehmon_menyu_bot](https://t.me/mehmon_menyu_bot) · 🍽 **Demo menyu:** https://mehmon-zeta.vercel.app/#/t/demo/DEMO1
+
 Stoldagi QR → sayt → Telegram bot (Mini App) → menyu 6 tilda → buyurtma oshxona ekraniga.
 
 ## Sahifalar
