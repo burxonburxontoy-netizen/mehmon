@@ -9,7 +9,7 @@ const DEFAULTS = {
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jd2lmcWFmcndhd21yamF4cXhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTI5MDMsImV4cCI6MjEwNjc4ODkwM30.tM_f5QPWuOPsXmvXUHQLi8YlaCLek8vivri1VkIcR_U",
 };
 export const env = (k) => {
-  const v = process.env[k] || DEFAULTS[k];
+  const v = (process.env[k] || "").trim().replace(/^["']|["']$/g, "") || DEFAULTS[k];
   if (!v) throw new Error(`Environment variable yo'q: ${k}`);
   return v;
 };
@@ -41,7 +41,9 @@ export const tgSafe = (m, p) => (hasBot() ? tg(m, p).catch((e) => console.error(
 /** Supabase REST. as: "service" | "anon" | {token} */
 export async function sb(path, { method = "GET", body, as = "service", prefer } = {}) {
   const key = as === "service" ? env("SUPABASE_SERVICE_ROLE_KEY") : env("SUPABASE_ANON_KEY");
-  const headers = { apikey: key, Authorization: `Bearer ${typeof as === "object" ? as.token : key}`, "Content-Type": "application/json" };
+  const headers = { apikey: key, "Content-Type": "application/json" };
+  if (typeof as === "object") headers.Authorization = `Bearer ${as.token}`;
+  else if (!key.startsWith("sb_")) headers.Authorization = `Bearer ${key}`;
   if (prefer) headers.Prefer = prefer;
   const r = await fetch(`${env("SUPABASE_URL").replace(/\/$/, "")}/rest/v1/${path}`, {
     method, headers, body: body ? JSON.stringify(body) : undefined,
@@ -82,3 +84,15 @@ export const T = {
   open: { uz: "🍽 Menyuni ochish", ru: "🍽 Открыть меню", en: "🍽 Open menu", tr: "🍽 Menüyü aç", zh: "🍽 打开菜单", ko: "🍽 메뉴 열기" },
 };
 export const t = (key, lang, n) => (T[key][lang] || T[key].uz).replace("{n}", n ?? "");
+
+/** Kalit turini aniqlash (maxfiy qiymatni oshkor qilmasdan) */
+export function keyInfo() {
+  const k = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+  if (!k) return "yo'q";
+  if (k.startsWith("sb_secret_")) return "yangi secret kalit (sb_secret_)";
+  if (k.startsWith("sb_publishable_")) return "XATO: publishable kalit qo'yilgan";
+  try {
+    const role = JSON.parse(Buffer.from(k.split(".")[1], "base64url").toString()).role;
+    return role === "service_role" ? "service_role ✅" : `XATO: ${role} kalit qo'yilgan`;
+  } catch { return `noma'lum format (${k.length} belgi)`; }
+}

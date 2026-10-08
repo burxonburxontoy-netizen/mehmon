@@ -1,5 +1,5 @@
 // Bir martalik sozlash: /api/setup — webhook, buyruqlar, menyu tugmasi
-import { tg, siteUrl, webhookSecret } from "./_lib.js";
+import { tg, siteUrl, webhookSecret, keyInfo, sb } from "./_lib.js";
 
 export default async function handler(req, res) {
   try {
@@ -10,8 +10,10 @@ export default async function handler(req, res) {
     await tg("setMyShortDescription", { short_description: "Aqlli QR-menyu 🍽 6 tilda" });
     await tg("setChatMenuButton", { menu_button: { type: "web_app", text: "Menyu", web_app: { url: `${site}/#/app` } } });
     const me = await tg("getMe", {});
+    let db = "ok";
+    try { await sb("mn_restaurants?select=id&limit=1"); } catch (e) { db = "XATO: " + e.message; }
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.status(200).send(`<body style="font-family:system-ui;padding:40px;background:#120E0B;color:#F7EFE3"><h1>✅ Bot sozlandi</h1><p>@${me.username}</p><p>Webhook: ${site}/api/bot</p></body>`);
+    res.status(200).send(`<body style="font-family:system-ui;padding:40px;background:#120E0B;color:#F7EFE3"><h1>✅ Bot sozlandi</h1><p>@${me.username}</p><p>Webhook: ${site}/api/bot</p><p>Supabase kalit: ${keyInfo()}</p><p>Baza: ${db}</p></body>`);
   } catch (e) {
     res.status(500).send("Xato: " + e.message);
   }
